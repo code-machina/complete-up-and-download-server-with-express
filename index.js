@@ -1,38 +1,31 @@
 'use strict';
+
+const _ = require('lodash');
+let jwt = require('jsonwebtoken');
+const { JsonWebTokenError } = require('jsonwebtoken');
+require('express-async-errors');
+
 const express = require('express');
 const app = express();
-const multer = require('multer');
- 
-let storage = multer.diskStorage({
-    destination: function (req, file, callback) {
-        callback(null, __dirname + '/uploads/'); // set upload directory on local system.
-    },
-    filename: function (req, file, callback) {
-        callback(null, file.fieldname + '-' + Date.now()); // appending current date to the file name.
-    }
-});
- 
-let upload = multer({ storage: storage }).single('file'); // file upload handler , should be same same as form element name
- 
-app.get('/', function (req, res) {
-    res.sendFile(__dirname + "/index.html"); // load html form
+
+require('./startup/init')(app);
+
+process.on('unhandledRejection', (error) => {
+  console.log(' WE GOT AN UNHANDLED REJECTION .... ');
+  console.log(error);
+  // winston.error(error.message, error);
 });
 
-app.post('/api/v1/upload', function (req, res) { // process the input request
-    upload(req, res, function (err) { 
-        if (err) {
-            return res.end("Error uploading photo.");
-        }
-        res.end("Photo is uploaded successfully.");
-    });
+process.on('uncaughtException', (ex) => {
+  console.log(' WE GOT AN UNCAUGHTED EXCEPTION .... ');
+  console.log(ex);
+  // console.log(ex);
+  // winston.error(ex.message, ex);
+  process.exit(1);
 });
-
-app.get('/api/v1/download', function (req, res) {
-  
-})
  
 // Start web server at port 3000
-let port = 3000;
+let port = process.env.PORT | 4093;
 let server = app.listen(port, function () {
     var host = server.address().address;
     var port = server.address().port;
