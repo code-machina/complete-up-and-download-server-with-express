@@ -10,24 +10,40 @@ function fsutil(ROOT_DIR){
     generate_symlink: function (src, dst){
       const dpath = path.resolve(config.BASE_TEMP_FOLDER, dst)
       const spath = path.resolve(config.BASE_FILE_FOLDER, src)
-      fs.exists(dpath, function(exists) {
-        if(!exists) {
-          fs.symlinkSync(spath, dpath, function(err) {
-            console.log(err);
-            return false;
-          })
-          return true;
-        } else {
-          return true;
+      if (!this.check_temp_file_exist(dpath)){ // 심링크가 없음
+        try {
+          fs.symlinkSync(spath, dpath)
+          return true; // 파일 생성 성공
+        } catch {
+          console.log('Symlink 생성 중에 에러가 발생')
+          return false; // 파일 생성 에러
         }
-      })
+      } else { // 심링크가 있음
+        return true;
+      }
     },
-    check_file_exists: function (fname) {
+    check_file_exist: function (fname) {
+      /* 원본 파일이 존재하는지 체크한다.
+       */
+      const fpath = path.resolve(config.BASE_FILE_FOLDER, fname)
+      console.log(fpath)
+      if ( fs.existsSync(fpath) ) {
+        return true;
+      }else {
+        return false;
+      }
+    },
+    check_temp_file_exist: function (fname) {
+      /* 해시 Symlink 에 파일이 존재하는 지 체크한다.
+      우선, sync 버전으로 돌린다.
+       */
       const fpath = path.resolve(config.BASE_TEMP_FOLDER, fname)
-      fs.exists(fpath, function(exists) {
-        if (exists) return true;
-        else return false;
-      })
+      console.log(fpath)
+      if ( fs.existsSync(fpath) ) {
+        return true;
+      }else {
+        return false;
+      }
     },
     get_abs_path: function() {
       return path.resolve(ROOT_DIR)
@@ -50,11 +66,18 @@ function fsutil(ROOT_DIR){
         path: realPath,
         file: path.basename(realPath)
       }
-
-      console.log(sympath)
-      fs.exists(sympath, function(exists) {
-        if (exists) { return sympath } else { return undefined}
-      })
+    },
+    del_symlink_only: function (hash) {
+      // WARNING: 이 함수는 위험할 수 있으므로 항상, 절대 경로이어야 합니다.
+      const sympath = path.resolve(config.BASE_TEMP_FOLDER, hash)
+      try {
+        fs.unlinkSync(sympath)
+        return true; // unlink 성공
+      } catch {
+        return false; // unlink 실패(?)
+      }
+      
+      
     }
   }
 };

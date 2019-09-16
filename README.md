@@ -1,11 +1,25 @@
 # Complete Up N Down-load Server with Express.js
 
-Express.js 를 이용한 업/다운로드 파일 서버입니다. 
+Express.js 를 이용한 업/다운로드 파일 서버입니다. DB-less 방식으로 임시 다운로드 링크를 생성하는 방식입니다. 
+다운로드 서버와 웹 서비스 서버 간에 비밀키 공유가 필요합니다.
+
+이 프로젝트는 다음의 요구사항을 만족합니다.
+
+- 인가된 사용자에게만 다운로드 링크를 제공
+- 다운로드 링크의 유효기간을 체크
+- 데이터베이스를 이용하지 않은 간편한 구성
+- 인가되지 않은 다운로드 시도 차단
+
 
 ## Depends On
 
 - epxress.js
-- multer
+
+## How to start
+
+```bash
+npm run dev
+```
 
 ## To use es6 feature 
 
