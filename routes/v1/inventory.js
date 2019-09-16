@@ -93,20 +93,4 @@ router.get('/download/:hash', function(req, res) {
   }
 })
 
-router.post('/temp-path', function (req, res) {
-  const { msg, authkey } = _.pick(req.body, ['msg', 'authkey'])
-
-  // 서버 간의 인증 키를 통해 접근 제어를 수행한다.
-  try {
-    console.log(_.pick(req.body, ['msg', 'authkey']))
-    console.log(jwt.verify(req.body.msg, config.authkey))
-  } catch(JsonWebTokenError) {
-    // JWT 토큰 검증 에러가 발생할 경우, 인가되지 않은 사용자이다.
-    return res.status(401).send({err: 'You\'re not authorized' }) // Unauthorized
-  }
-  return res.status(200).send({})
-})
-
-router.get
-
 module.exports = router;
